@@ -1,7 +1,7 @@
 # 🚀 Kali LAN Share — Offline File Sharing System
 
 <p align="center">
-  <img src="assets/dashboard.png" width="900"/>
+  <img src="dashboard.png" width="900"/>
 </p>
 
 <p align="center">
@@ -35,7 +35,7 @@ No internet required — just connect to the same network and share instantly.
 ### 🏠 Home Page
 
 <p align="center">
-  <img src="assets/home.png" width="800"/>
+  <img src="landing.png" width="800"/>
 </p>
 
 ---
@@ -43,7 +43,7 @@ No internet required — just connect to the same network and share instantly.
 ### 💻 Session Dashboard
 
 <p align="center">
-  <img src="assets/dashboard.png" width="800"/>
+  <img src="dashboard.png" width="800"/>
 </p>
 
 ---
