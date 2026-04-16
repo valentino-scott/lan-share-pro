@@ -1,39 +1,38 @@
 # 🚀 Kali LAN Share — Offline File Sharing System
 
 <p align="center">
-  <img src="assets/session-ui.png" width="900"/>
+  <img src="assets/dashboard.png" width="900"/>
 </p>
 
 <p align="center">
-  <b>⚡ Secure • Offline • Lightning Fast LAN File Sharing</b>
+  <b>⚡ Offline • Fast • Zero Setup LAN File Sharing</b>
 </p>
 
 ---
 
-A **high-performance LAN-based file sharing + chat system** built with **FastAPI**, designed for **offline environments**.
+A **high-performance LAN file sharing + chat system** built with **FastAPI**.
 
-No internet. No setup complexity. Just **connect → share → done**.
+No internet required — just connect to the same network and share instantly.
 
 ---
 
 ## ✨ Features
 
-* ⚡ **Ultra-fast local file sharing** (up to 10GB per file)
-* 📡 **LAN-only access** — zero internet dependency
-* 🔗 **Session-based sharing system**
-* 📱 **QR code instant join**
-* 💬 **Real-time chat with copy button**
-* 📊 **Download tracking per user**
-* 👥 **Live peer detection**
-* 🧹 **Auto-cleanup sessions**
-* 👀 **File preview (images & text)**
-* 📋 **Sticky copy for messages (dev-friendly)**
+* ⚡ Fast file transfer (up to 10GB)
+* 📡 Works fully offline (LAN only)
+* 🔗 Session-based sharing
+* 📱 QR code join
+* 💬 Built-in chat (with copy button)
+* 📊 Download tracking
+* 👥 Peer detection
+* 🧹 Auto session cleanup
+* 👀 File preview (text/images)
 
 ---
 
-## 📸 Screenshots
+## 📸 Preview
 
-### 🏠 Home Interface
+### 🏠 Home Page
 
 <p align="center">
   <img src="assets/home.png" width="800"/>
@@ -41,34 +40,10 @@ No internet. No setup complexity. Just **connect → share → done**.
 
 ---
 
-### 🔗 Create Session + QR Sharing
+### 💻 Session Dashboard
 
 <p align="center">
-  <img src="assets/create-session.png" width="800"/>
-</p>
-
----
-
-### 💻 Live Session Dashboard
-
-<p align="center">
-  <img src="assets/session-ui.png" width="800"/>
-</p>
-
----
-
-### 📂 File Upload & Download
-
-<p align="center">
-  <img src="assets/file-upload.png" width="800"/>
-</p>
-
----
-
-### 💬 Built-in Chat System
-
-<p align="center">
-  <img src="assets/chat.png" width="800"/>
+  <img src="assets/dashboard.png" width="800"/>
 </p>
 
 ---
@@ -76,20 +51,14 @@ No internet. No setup complexity. Just **connect → share → done**.
 ## 🧠 How It Works
 
 ```text
-Start Server → Create Session → Share Link/QR → Join → Transfer Files
+Start → Create Session → Share Link/QR → Join → Transfer Files
 ```
-
-1. Run the server
-2. Create a session
-3. Share link or QR
-4. Others join via LAN
-5. Upload/download instantly
 
 ---
 
 ## 📦 Requirements
 
-* Python **3.9+**
+* Python 3.9+
 * pip
 
 ---
@@ -112,7 +81,7 @@ python share.py
 
 ---
 
-### 🐧 Linux (Kali / Ubuntu / Debian)
+### 🐧 Linux (Temporary Run)
 
 ```bash
 git clone https://github.com/valentino-scott/kali-lan-share.git
@@ -128,7 +97,45 @@ python3 share.py
 
 ---
 
-### 🍎 macOS
+## ⚡ Permanent Installation (Linux)
+
+Install system-wide so you can run with:
+
+```bash
+share
+```
+
+### Steps:
+
+```bash
+# Clone to /opt (recommended for system apps)
+sudo git clone https://github.com/valentino-scott/kali-lan-share.git /opt/kali-share
+
+cd /opt/kali-share
+
+# Install dependencies globally (or inside venv if preferred)
+sudo pip3 install fastapi uvicorn python-multipart qrcode[pil]
+
+# Create command wrapper
+sudo tee /usr/local/bin/share > /dev/null <<'EOF'
+#!/bin/bash
+cd /opt/kali-share
+python3 share.py
+EOF
+
+# Make executable
+sudo chmod +x /usr/local/bin/share
+```
+
+### Run:
+
+```bash
+share
+```
+
+---
+
+## 🍎 macOS
 
 ```bash
 git clone https://github.com/valentino-scott/kali-lan-share.git
@@ -153,28 +160,22 @@ Local:   http://localhost:8000
 Network: http://192.168.x.x:8000
 ```
 
-### Quick Start
+### Steps:
 
-1. Open → `http://localhost:8000`
-2. Click **Create Session**
-3. Share:
-
-   * Link
-   * QR Code
-4. Join via:
-
-   ```
-   http://YOUR-IP:8000/session/<SESSION_ID>
-   ```
+1. Open browser → `http://localhost:8000`
+2. Create session
+3. Share link or QR
+4. Join from another device
+5. Transfer files
 
 ---
 
-## 📂 Project Structure
+## 📂 Structure
 
 ```bash
 .
-├── share.py        # FastAPI backend
-├── assets/         # Screenshots
+├── share.py
+├── assets/
 └── README.md
 ```
 
@@ -182,99 +183,44 @@ Network: http://192.168.x.x:8000
 
 ## ⚡ Performance
 
-| Method                 | Performance               |
-| ---------------------- | ------------------------- |
-| FastAPI (this project) | 🚀 High                   |
-| python http.server     | 🐢 Basic                  |
-| NGINX                  | ⚡ Very High (static only) |
-
-✔ Handles **large files (GBs)**
-✔ Supports **multiple users concurrently**
+* Faster than `python -m http.server`
+* Handles large files (GBs)
+* Multiple users supported
 
 ---
 
 ## 🔐 Security
 
-* Designed for **local network only**
-* No authentication (intentional for speed)
+* LAN-only by design
+* No authentication (for speed)
 
-⚠️ If exposing externally:
-
-* Add reverse proxy (NGINX)
-* Add authentication
+⚠️ Do not expose publicly without security layer
 
 ---
 
-## 🧹 Session Lifecycle
+## 🧹 Session Behavior
 
-* Default timeout: **60 minutes**
-* Auto deletes:
-
-  * Files
-  * Messages
-  * Sessions
-
----
-
-## 🛠️ Tech Stack
-
-* **Backend:** FastAPI
-* **Server:** Uvicorn
-* **Frontend:** HTML / CSS / JS
-* **QR:** qrcode
-* **Async Engine:** asyncio
-
----
-
-## 📌 Use Cases
-
-* 🏫 Classroom file sharing
-* 🧑‍💻 Cybersecurity labs (Kali Linux)
-* 🏢 Office LAN transfers
-* ⚡ Quick file drops without internet
-
----
-
-## 📄 Source Code
-
-Main file:
-👉 `share.py`
-
-Repository:
-👉 https://github.com/valentino-scott/kali-lan-share
-
----
-
-## 🚀 Roadmap
-
-* 🔐 Authentication system
-* 📁 Folder uploads
-* 🔄 Drag & drop UI
-* 📡 WebRTC P2P transfer
-* 📱 Mobile UI improvements
+* Timeout: 60 minutes
+* Auto deletes all session data
 
 ---
 
 ## 🧑‍💻 Author
 
 **valentino-scott (traders_fx / Lennox_fx)**
-Kenyan developer • Forex trader
 
 ---
 
 ## ⭐ Support
 
-If you like this project:
-
-* ⭐ Star the repo
-* 🍴 Fork it
-* 🚀 Improve it
+* Star the repo
+* Fork it
+* Improve it
 
 ---
 
 ## ⚠️ Disclaimer
 
-For **local network use only**.
-Use responsibly.
+For local network use only.
 
 ---
