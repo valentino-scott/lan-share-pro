@@ -1,4 +1,4 @@
-# 🚀 Kali LAN Share — Offline File Sharing System
+# 🚀LAN Share PRO — Offline File Sharing System
 
 <p align="center">
   <img src="dashboard.png" width="900"/>
