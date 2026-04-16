@@ -207,7 +207,7 @@ Network: http://192.168.x.x:8000
 
 ## 🧑‍💻 Author
 
-**valentino-scott (traders_fx / Lennox_fx)**
+**valentino-scott**
 
 ---
 
