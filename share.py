@@ -1,4 +1,4 @@
-# share.py - Complete working version with sticky copy button
+# share.py - Complete fixed version with double-click copy
 """
 Kali LAN Share - Professional Offline File Sharing System
 Run with: python share.py
@@ -498,8 +498,10 @@ HOME_PAGE = """<!DOCTYPE html>
 """
 
 # ============================================================================
-# SESSION PAGE - WITH STICKY COPY BUTTON
+# SESSION PAGE - DOUBLE CLICK TO COPY, FIXED UI
 # ============================================================================
+
+
 
 SESSION_PAGE = r"""<!DOCTYPE html>
 <html lang="en">
@@ -786,19 +788,20 @@ SESSION_PAGE = r"""<!DOCTYPE html>
             color: var(--kali-blue-light);
         }}
 
-        /* Chat Messages - With Sticky Copy Button */
+        /* Chat Messages */
         .messages-container {{
             flex: 1;
             overflow-y: auto;
             padding: 1rem;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.75rem;
         }}
 
         .message {{
             position: relative;
             padding: 1rem;
+            padding-right: 3rem;
             background: var(--kali-bg);
             border-radius: 12px;
             transition: all 0.2s;
@@ -807,16 +810,16 @@ SESSION_PAGE = r"""<!DOCTYPE html>
 
         .message:hover {{
             border-color: var(--kali-blue);
+            background: var(--kali-card);
         }}
 
         .message-header {{
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
             font-size: 0.7rem;
             color: var(--kali-text-dim);
-            padding-right: 4rem;
         }}
 
         .message-content {{
@@ -830,8 +833,7 @@ SESSION_PAGE = r"""<!DOCTYPE html>
 
         /* Code blocks styling */
         .message-content pre {{
-            position: relative;
-            margin: 0.75rem 0;
+            margin: 0.5rem 0;
             padding: 1rem;
             background: #0a0a0f;
             border-radius: 8px;
@@ -852,33 +854,39 @@ SESSION_PAGE = r"""<!DOCTYPE html>
             padding: 0;
         }}
 
-        /* Sticky Copy Button - Always visible when scrolling */
-        .copy-btn-floating {{
-            position: sticky;
-            top: 0.5rem;
-            float: right;
+        /* Copy Icon Button */
+        .copy-icon {{
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
             background: var(--kali-card);
             border: 1px solid var(--kali-border);
-            padding: 0.3rem 0.8rem;
             border-radius: 6px;
-            color: var(--kali-blue-light);
+            padding: 0.25rem 0.5rem;
             cursor: pointer;
-            font-size: 0.7rem;
+            opacity: 0.6;
             transition: all 0.2s;
+            font-size: 0.75rem;
+            color: var(--kali-text-dim);
             z-index: 10;
-            margin-left: 0.5rem;
-            margin-bottom: 0.5rem;
         }}
 
-        .copy-btn-floating:hover {{
+        .copy-icon:hover {{
+            opacity: 1;
             background: var(--kali-blue);
             color: white;
             border-color: var(--kali-blue);
         }}
 
-        /* Clearfix for floating copy button */
-        .message-content:has(pre) {{
-            display: flow-root;
+        /* Copy animation */
+        .copy-flash {{
+            animation: copyFlash 0.3s ease;
+        }}
+
+        @keyframes copyFlash {{
+            0% {{ background-color: var(--kali-bg); }}
+            50% {{ background-color: var(--kali-success); }}
+            100% {{ background-color: var(--kali-bg); }}
         }}
 
         .message-input-area {{
@@ -1100,7 +1108,7 @@ SESSION_PAGE = r"""<!DOCTYPE html>
             <div class="messages-container" id="messages"><div class="empty-state">NO MESSAGES</div></div>
             <div class="message-input-area">
                 <form id="messageForm" class="message-form">
-                    <textarea id="msgInput" class="message-input" rows="3" placeholder="Type your message..."></textarea>
+                    <textarea id="msgInput" class="message-input" rows="3" placeholder="Type your message... Click the copy icon or double-click any message to copy!"></textarea>
                     <button type="submit" class="send-btn">SEND</button>
                 </form>
             </div>
@@ -1194,6 +1202,22 @@ SESSION_PAGE = r"""<!DOCTYPE html>
             document.getElementById('previewModal').classList.remove('active');
         }}
         
+        function copyMessage(text, element) {{
+            navigator.clipboard.writeText(text).then(() => {{
+                if (element) {{
+                    element.classList.add('copy-flash');
+                }}
+                showToast('✓ Copied to clipboard');
+                setTimeout(() => {{
+                    if (element) {{
+                        element.classList.remove('copy-flash');
+                    }}
+                }}, 300);
+            }}).catch(() => {{
+                showToast('✗ Failed to copy');
+            }});
+        }}
+        
         async function loadMessages() {{
             try {{
                 const res = await fetch(`/api/session/${{sessionId}}/messages`);
@@ -1206,19 +1230,25 @@ SESSION_PAGE = r"""<!DOCTYPE html>
                     return;
                 }}
                 
-                container.innerHTML = data.messages.map(msg => `
-                    <div class="message">
+                container.innerHTML = data.messages.map((msg, idx) => `
+                    <div class="message" data-message-idx="${{idx}}">
                         <div class="message-header">
                             <span>💬 ${{escapeHtml(msg.client_ip)}}</span>
                             <span>${{new Date(msg.timestamp).toLocaleTimeString()}}</span>
                         </div>
                         <div class="message-content">${{escapeHtml(msg.content)}}</div>
-                        <button class="copy-btn-floating" onclick="copyFullMessage('${{escapeHtml(msg.content).replace(/'/g, "\\\\'")}}')">📋 COPY</button>
+                        <button class="copy-icon" onclick="event.stopPropagation(); copyMessage(this.parentElement.querySelector('.message-content').innerText, this.parentElement)">📋 COPY</button>
                     </div>
                 `).join('');
                 
-                // Auto-scroll to bottom
-                container.scrollTop = container.scrollHeight;
+                // Add double-click event listeners to all messages
+                document.querySelectorAll('.message').forEach(msgElement => {{
+                    msgElement.addEventListener('dblclick', function(e) {{
+                        e.stopPropagation();
+                        const text = this.querySelector('.message-content').innerText;
+                        copyMessage(text, this);
+                    }});
+                }});
             }} catch (error) {{
                 console.error('Error loading messages:', error);
             }}
@@ -1256,8 +1286,6 @@ SESSION_PAGE = r"""<!DOCTYPE html>
                     input.value = '';
                     showToast('✓ Message sent');
                     await loadMessages();
-                    const container = document.getElementById('messages');
-                    container.scrollTop = container.scrollHeight;
                 }} else {{
                     showToast('✗ Failed to send');
                 }}
@@ -1311,11 +1339,6 @@ SESSION_PAGE = r"""<!DOCTYPE html>
             }}
         }}
         
-        function copyFullMessage(text) {{
-            navigator.clipboard.writeText(text);
-            showToast('✓ MESSAGE COPIED');
-        }}
-        
         function showToast(msg) {{
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -1350,7 +1373,6 @@ SESSION_PAGE = r"""<!DOCTYPE html>
 </body>
 </html>
 """
-
 # ============================================================================
 # API ENDPOINTS
 # ============================================================================
